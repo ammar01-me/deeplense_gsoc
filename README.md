@@ -1,6 +1,6 @@
 # deeplense_gsoc
 <br>
-<h2>Gravitational Lens Detection using Deep Learning<h2/>
+<h2>Gravitational Lens Detection using Deep Learning</h2>
 This project implements a machine learning pipeline to identify gravitational lenses from astronomical images using PyTorch.
 The model learns to classify whether an input image contains a strong gravitational lens or a non-lensed galaxy.
 The dataset contains images captured in three astronomical filters, stored as NumPy arrays with shape:
