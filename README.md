@@ -1,17 +1,17 @@
 # deeplense_gsoc
-<br><br>
-Gravitational Lens Detection using Deep Learning-->
+<br>
+<h2>Gravitational Lens Detection using Deep Learning<h2/>
 This project implements a machine learning pipeline to identify gravitational lenses from astronomical images using PyTorch.
 The model learns to classify whether an input image contains a strong gravitational lens or a non-lensed galaxy.
 The dataset contains images captured in three astronomical filters, stored as NumPy arrays with shape:
 (3, 64, 64)
-<br>
+<br><hr>
 Each sample belongs to one of two classes:
 Lens – galaxy images containing gravitational lensing structures such as arcs or rings
 Non-Lens – normal galaxy images without lensing
-<br>
+<br><hr>
 The model is trained and evaluated using ROC curve and AUC score.
-<br>
+<br><hr>
 Project Pipeline
 1.Data Loading<br>
 2.Load .npy images from dataset folders<br>
@@ -28,7 +28,7 @@ Project Pipeline
 13.Evaluation<br>
 14.ROC Curve<br>
 15.AUC score<br>
-<br><br>
+<br><hr>
 Required libraries:
 Python <br>
 PyTorch<br>
@@ -36,7 +36,7 @@ NumPy<br>
 Matplotlib<br>
 scikit-learn<br>
 
-<br><br>
+<br><hr>
 Typical performance for a baseline CNN:
 AUC ≈ 0.85 – 0.92
 Using transfer learning (ResNet18) and data augmentation can further improve performance.
@@ -47,4 +47,4 @@ Transfer learning with pretrained CNNs<br>
 Vision Transformer models<br>
 Handling class imbalance using weighted loss<br>
 <br>
-Author:  Sayed Ammar
+Author:  <b>Sayed Ammar</b>
