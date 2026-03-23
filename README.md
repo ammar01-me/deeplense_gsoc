@@ -1,12 +1,7 @@
 # DeepLense — Gravitational Lens Detection
 
 <div align="center">
-
-![ML4SCI](https://img.shields.io/badge/ML4SCI-DeepLense-blueviolet?style=flat)
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue?style=flat&logo=python)
-![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?style=flat&logo=pytorch)
-
-
+   
 **Detecting strong gravitational lenses in wide-field astronomical surveys using deep learning.**
 
 *GSoC 2025 Evaluation Task — ML4SCI DeepLense | Lens Finding*
@@ -16,7 +11,7 @@
 
 ---
 
-## 📌 Table of Contents
+## Table of Contents
 
 - [What is Gravitational Lensing?](#-what-is-gravitational-lensing)
 - [Project Overview](#-project-overview)
@@ -29,7 +24,7 @@
 
 ---
 
-## 🌌 What is Gravitational Lensing?
+## What is Gravitational Lensing?
 
 When a **massive galaxy or galaxy cluster** sits between us and a distant light source, its gravity bends the background light — like a glass lens. This creates **arcs, rings, or multiple images** of the background galaxy in the sky.
 
@@ -42,7 +37,7 @@ When a **massive galaxy or galaxy cluster** sits between us and a distant light 
 
 Finding these lenses is important for studying **dark matter**, measuring the **Hubble constant**, and testing **Einstein's theory of general relativity**.
 
-> ⚠️ **The Core Problem:** In large surveys like HSC-SSP, there are millions of galaxy images but only a few hundred are actual lenses. This extreme class imbalance makes automated detection very difficult.
+> **The Core Problem:** In large surveys like HSC-SSP, there are millions of galaxy images but only a few hundred are actual lenses. This extreme class imbalance makes automated detection very difficult.
 
 ---
 
@@ -64,10 +59,10 @@ This project builds a full end-to-end deep learning pipeline to:
 | Property       | Value                                     |
 |----------------|-------------------------------------------|
 | Shape          | `(3, 64, 64)`                             |
-| Channels       | 3 astronomical filters (g, r, i bands)   |
+| Channels       | 3 astronomical filters (g, r, i bands)    |
 | Pixel values   | Float32, normalised to `[0, 1]`           |
 | Storage format | `.npy` (NumPy binary file)                |
-| Task type      | Binary classification (Lens / Non-Lens)  |
+| Task type      | Binary classification (Lens / Non-Lens)   |
 
 ### Class Distribution — Actual Dataset
 
@@ -101,20 +96,20 @@ dataset/
 
 ---
 
-## 🔄 Pipeline
+## Pipeline
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │                        DeepLense Pipeline                            │
 │                                                                      │
-│  Step 1           Step 2              Step 3            Step 4      │
-│  ─────────────    ──────────────      ──────────────    ──────────  │
-│  Load .npy    →   Normalise      →   ResNet18      →   Evaluate    │
-│  files            pixels             Transfer           ROC + AUC   │
-│  Assign           Convert to         Learning                       │
-│  Labels           PyTorch tensors    Model                          │
-│  (1 or 0)         shape(B,3,64,64)   BCE Loss                       │
-│                                      Adam Optimizer                 │
+│  Step 1           Step 2              Step 3            Step 4       │
+│  ─────────────    ──────────────      ──────────────    ──────────   │
+│  Load .npy    →   Normalise      →   ResNet18      →   Evaluate      │
+│  files            pixels             Transfer           ROC + AUC    │
+│  Assign           Convert to         Learning                        │
+│  Labels           PyTorch tensors    Model                           │
+│  (1 or 0)         shape(B,3,64,64)   BCE Loss                        │
+│                                      Adam Optimizer                  │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -122,18 +117,18 @@ dataset/
 
 | Step | Name                   | Details                                                        |
 |------|------------------------|----------------------------------------------------------------|
-| 1    | Mount & Extract        | Load dataset from Google Drive, extract zip file              |
-| 2    | Explore & Visualise    | Plot lens/non-lens images, count class sizes, check imbalance |
-| 3    | Custom Dataset Class   | `LensDataset` inherits from PyTorch `Dataset`                 |
-| 4    | Normalisation          | `(img - min) / (max - min)` per image → range `[0, 1]`       |
-| 5    | DataLoader             | Batch size = 32, shuffled training loader                     |
-| 6    | Model Setup            | ResNet18 pretrained, all layers frozen, FC head replaced      |
-| 7    | Training               | 10 epochs, `BCEWithLogitsLoss`, Adam (lr = 0.001)             |
-| 8    | Evaluation             | Accuracy, ROC Curve, AUC Score on unseen test set             |
+| 1    | Mount & Extract        | Load dataset from Google Drive, extract zip file               |
+| 2    | Explore & Visualise    | Plot lens/non-lens images, count class sizes, check imbalance  |
+| 3    | Custom Dataset Class   | `LensDataset` inherits from PyTorch `Dataset`                  |
+| 4    | Normalisation          | `(img - min) / (max - min)` per image → range `[0, 1]`         |
+| 5    | DataLoader             | Batch size = 32, shuffled training loader                      |
+| 6    | Model Setup            | ResNet18 pretrained, all layers frozen, FC head replaced       |
+| 7    | Training               | 10 epochs, `BCEWithLogitsLoss`, Adam (lr = 0.001)              |
+| 8    | Evaluation             | Accuracy, ROC Curve, AUC Score on unseen test set              |
 
 ---
 
-## 🧠 Model Architecture
+## Model Architecture
 
 ### ResNet18 with Transfer Learning
 
@@ -144,22 +139,22 @@ Input Image  (3, 64, 64)
         │
         ▼
 ┌──────────────────────────────────────┐
-│   ResNet18 Backbone  — FROZEN ❄️     │
+│   ResNet18 Backbone  — FROZEN        │
 │                                      │
-│   Conv1  (3 → 64, 7×7, stride 2)    │
+│   Conv1  (3 → 64, 7×7, stride 2)     │
 │   BatchNorm → ReLU → MaxPool         │
 │                                      │
-│   Layer1: 2× BasicBlock  (64 ch)    │
-│   Layer2: 2× BasicBlock  (128 ch)   │
-│   Layer3: 2× BasicBlock  (256 ch)   │
-│   Layer4: 2× BasicBlock  (512 ch)   │
+│   Layer1: 2× BasicBlock  (64 ch)     │
+│   Layer2: 2× BasicBlock  (128 ch)    │
+│   Layer3: 2× BasicBlock  (256 ch)    │
+│   Layer4: 2× BasicBlock  (512 ch)    │
 │                                      │
-│   AdaptiveAvgPool → feature (512,)  │
+│   AdaptiveAvgPool → feature (512,)   │
 └──────────────────┬───────────────────┘
                    │  512-dim feature vector
                    ▼
 ┌──────────────────────────────────────┐
-│   Classification Head — TRAINABLE 🔥 │
+│   Classification Head — TRAINABLE    │
 │                                      │
 │   Linear(512 → 1)                    │
 │   BCEWithLogitsLoss (sigmoid inside) │
@@ -188,7 +183,7 @@ Input Image  (3, 64, 64)
 
 | Strategy                 | What is Trained        | Best For                           |
 |--------------------------|------------------------|------------------------------------|
-| Freeze all (this repo)   | FC head only           | Small dataset, fast training ✅    |
+| Freeze all (this repo)   | FC head only           | Small dataset, fast training       |
 | Fine-tune last layer     | FC + Layer4            | Medium dataset, better accuracy    |
 | Fine-tune all layers     | Everything             | Large dataset, maximum accuracy    |
 
@@ -211,18 +206,6 @@ Input Image  (3, 64, 64)
 | 8     | 0.15104       | ↓ −0.00177     |
 | 9     | 0.15184       | ↑ +0.00080     |
 
-```
-Training Loss Curve
-──────────────────────────────────────────────────
-0.175 │▓
-0.165 │ ▓
-0.156 │  ▓▓
-0.152 │    ▓▓▓
-0.150 │       ▓▓▓▓▓▓▓
-──────────────────────────────────────────────────
-       0   1   2   3   4   5   6   7   8   9
-                        Epoch
-```
 
 **Observation:** Loss drops sharply in the first 2 epochs then stabilises around 0.151–0.153. This is expected because only the tiny FC head is being trained.
 
@@ -246,29 +229,13 @@ Training Loss Curve
 
 | Metric            | Value      | Notes                                              |
 |-------------------|------------|----------------------------------------------------|
-| **Test Accuracy** | **97.68%** | High due to class imbalance — see warning below   |
-| **AUC Score**     | **0.8815** | Main metric — honest measure of discrimination    |
+| Test Accuracy     | 97.68%     | High due to class imbalance — see warning below    |
+| AUC Score         | 0.8815     | Main metric — honest measure of discrimination     |
 | Threshold used    | 0.5        | Default Sigmoid threshold                          |
 | Test samples      | 19,650     | (195 lens + 19,455 non-lens)                       |
 
-> ⚠️ **Important — why accuracy is misleading here:** The test set has ~99% non-lenses. A model that always predicts "Non-Lens" would get 99% accuracy — yet it would never find a single real lens! **AUC = 0.88 is the honest metric** that shows the model genuinely separates lenses from non-lenses.
+>  **Important — why accuracy is misleading here:** The test set has ~99% non-lenses. A model that always predicts "Non-Lens" would get 99% accuracy — yet it would never find a single real lens! **AUC = 0.88 is the honest metric** that shows the model genuinely separates lenses from non-lenses.
 
-### ROC Curve — Explanation
-
-```
-  True Positive Rate (Recall)
-  1.0 │           ╭──────────────────────
-      │        ╭──╯   ResNet18  AUC = 0.88
-  0.8 │      ╭─╯
-      │    ╭─╯
-  0.6 │   ╭╯
-      │  ╭╯
-  0.4 │ ╭╯
-      │╱   ← random baseline (AUC = 0.50)
-  0.0 └────────────────────────────────
-      0.0  0.2  0.4  0.6  0.8  1.0
-            False Positive Rate
-```
 
 ### AUC Score Reference Table
 
@@ -276,25 +243,25 @@ Training Loss Curve
 |-----------------|---------------------------------|
 | 1.00            | Perfect model                   |
 | 0.90 – 0.99     | Excellent                       |
-| **0.88**        | **Good — our result ✅**        |
+| 0.88            | Good — our result               |
 | 0.70 – 0.85     | Acceptable                      |
 | 0.50            | Random guessing (no skill)      |
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
-| Improvement                          | Expected Benefit                                         | Status      |
-|--------------------------------------|----------------------------------------------------------|-------------|
-| Data augmentation (flips, rotations) | Reduces overfitting, improves generalisation             | 🔜 Planned  |
-| Weighted loss / Focal loss           | Better handling of 16:1 class imbalance                  | 🔜 Planned  |
-| Fine-tune more ResNet layers         | Higher AUC — backbone adapts to astronomy images         | 🔜 Planned  |
-| EfficientNet / ViT backbone          | State-of-the-art accuracy on image tasks                 | 🔜 Planned  |
-| Threshold tuning for max Recall      | Catch more real lenses even at cost of false positives   | 🔜 Planned  |
-| Precision-Recall curve               | Fairer evaluation for highly imbalanced data             | 🔜 Planned  |
-| GradCAM visualisation                | Show which part of the image the model focuses on        | 🔜 Planned  |
-| Apply to real HSC-SSP sky data       | Discover actual new gravitational lens candidates        | 🎯 Goal     |
-| Cross-survey evaluation (DES, LSST)  | Check if model generalises to other telescopes           | 🎯 Goal     |
+| Improvement                          | Expected Benefit                                         | Status    |
+|--------------------------------------|----------------------------------------------------------|-----------|
+| Data augmentation (flips, rotations) | Reduces overfitting, improves generalisation             |  Planned  |
+| Weighted loss / Focal loss           | Better handling of 16:1 class imbalance                  |  Planned  |
+| Fine-tune more ResNet layers         | Higher AUC — backbone adapts to astronomy images         |  Planned  |
+| EfficientNet / ViT backbone          | State-of-the-art accuracy on image tasks                 |  Planned  |
+| Threshold tuning for max Recall      | Catch more real lenses even at cost of false positives   |  Planned  |
+| Precision-Recall curve               | Fairer evaluation for highly imbalanced data             |  Planned  |
+| GradCAM visualisation                | Show which part of the image the model focuses on        |  Planned  |
+| Apply to real HSC-SSP sky data       | Discover actual new gravitational lens candidates        |  Goal     |
+| Cross-survey evaluation (DES, LSST)  | Check if model generalises to other telescopes           |  Goal     |
 
 ---
 
