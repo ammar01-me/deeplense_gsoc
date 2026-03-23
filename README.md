@@ -41,7 +41,7 @@ Finding these lenses is important for studying **dark matter**, measuring the **
 
 ---
 
-## 🚀 Project Overview
+## Project Overview
 
 This project builds a full end-to-end deep learning pipeline to:
 
@@ -52,7 +52,7 @@ This project builds a full end-to-end deep learning pipeline to:
 
 ---
 
-## 📊 Dataset
+## Dataset
 
 ### Image Format
 
@@ -265,7 +265,7 @@ Input Image  (3, 64, 64)
 
 ---
 
-## 📚 References
+## References
 
 - [DeepLense — ML4SCI GSoC 2025](https://ml4sci.org/gsoc/projects/2025/project_DEEPLENSE.html)
 - [HSC-SSP Wide-Field Survey](https://hsc-release.mtk.nao.ac.jp/)
