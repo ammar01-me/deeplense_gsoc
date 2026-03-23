@@ -1,16 +1,15 @@
-# 🔭 DeepLense — Gravitational Lens Detection
+# DeepLense — Gravitational Lens Detection
 
 <div align="center">
 
-![GSoC](https://img.shields.io/badge/Google_Summer_of_Code-2025-orange?style=flat&logo=google)
 ![ML4SCI](https://img.shields.io/badge/ML4SCI-DeepLense-blueviolet?style=flat)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue?style=flat&logo=python)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?style=flat&logo=pytorch)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat)
+
 
 **Detecting strong gravitational lenses in wide-field astronomical surveys using deep learning.**
 
-*GSoC 2025 Evaluation Task — ML4SCI DeepLense | Specific Test II: Lens Finding*
+*GSoC 2025 Evaluation Task — ML4SCI DeepLense | Lens Finding*
 *Author: Sayed Ammar*
 
 </div>
@@ -26,8 +25,6 @@
 - [Model Architecture](#-model-architecture)
 - [Training](#-training)
 - [Results](#-results)
-- [Installation](#-installation)
-- [Usage](#-usage)
 - [Future Improvements](#-future-improvements)
 
 ---
@@ -285,156 +282,19 @@ Training Loss Curve
 
 ---
 
-## ⚙️ Installation
-
-```bash
-# 1. Clone this repository
-git clone https://github.com/ammar01-me/DeepLense.git
-cd DeepLense
-
-# 2. Install all required libraries
-pip install torch torchvision numpy matplotlib scikit-learn
-```
-
-### Required Libraries
-
-| Library        | Version  | Purpose                                       |
-|----------------|----------|-----------------------------------------------|
-| `torch`        | ≥ 2.0    | Model building, training, and inference       |
-| `torchvision`  | ≥ 0.15   | Pretrained ResNet18 model weights             |
-| `numpy`        | ≥ 1.23   | Loading `.npy` image files                    |
-| `matplotlib`   | ≥ 3.6    | Plotting images, loss curves, ROC curve       |
-| `scikit-learn` | ≥ 1.2    | Computing ROC curve and AUC score             |
-
----
-
-## 🧪 Usage
-
-### 1. Prepare the dataset (Google Colab)
-
-```python
-from google.colab import drive
-drive.mount('/content/drive')
-
-import zipfile
-zip_path = "/content/drive/MyDrive/gravitational_lense/lens-finding-test.zip"
-with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-    zip_ref.extractall("/content/dataset")
-print("Dataset extracted!")
-```
-
-### 2. Check class sizes
-
-```python
-import os
-
-train_lenses    = len(os.listdir("dataset/train_lenses"))      # 1730
-train_nonlenses = len(os.listdir("dataset/train_nonlenses"))   # 28675
-ratio = train_nonlenses / train_lenses
-print(f"Imbalance ratio: {ratio:.2f} non-lens per lens")
-# Output: 16.58 non-lens per lens
-```
-
-### 3. Train the model
-
-```python
-import numpy as np
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torchvision.models as models
-from torch.utils.data import Dataset, DataLoader
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-class LensDataset(Dataset):
-    def __init__(self, lens_dir, nonlens_dir):
-        self.images, self.labels = [], []
-        for f in os.listdir(lens_dir):
-            self.images.append(os.path.join(lens_dir, f))
-            self.labels.append(1)
-        for f in os.listdir(nonlens_dir):
-            self.images.append(os.path.join(nonlens_dir, f))
-            self.labels.append(0)
-    def __len__(self):
-        return len(self.images)
-    def __getitem__(self, idx):
-        img = np.load(self.images[idx])
-        img = (img - img.min()) / (img.max() - img.min())
-        return torch.tensor(img, dtype=torch.float32), \
-               torch.tensor(self.labels[idx], dtype=torch.float32)
-
-train_dataset = LensDataset("dataset/train_lenses", "dataset/train_nonlenses")
-train_loader  = DataLoader(train_dataset, batch_size=32, shuffle=True)
-
-# Build model
-model = models.resnet18(pretrained=True)
-for param in model.parameters():
-    param.requires_grad = False          # freeze backbone
-model.fc = nn.Linear(model.fc.in_features, 1)  # replace head
-model = model.to(device)
-
-criterion = nn.BCEWithLogitsLoss()
-optimizer  = optim.Adam(model.fc.parameters(), lr=0.001)
-
-for epoch in range(10):
-    model.train()
-    total_loss = 0
-    for images, labels in train_loader:
-        images, labels = images.to(device), labels.to(device)
-        optimizer.zero_grad()
-        loss = criterion(model(images).squeeze(), labels)
-        loss.backward()
-        optimizer.step()
-        total_loss += loss.item()
-    print(f"Epoch {epoch} | Loss: {total_loss/len(train_loader):.5f}")
-```
-
-### 4. Evaluate — ROC curve and AUC
-
-```python
-from sklearn.metrics import roc_curve, auc
-import matplotlib.pyplot as plt
-
-y_true, y_scores = [], []
-model.eval()
-with torch.no_grad():
-    for images, labels in test_loader:
-        probs = torch.sigmoid(model(images.to(device)))
-        y_true.extend(labels.numpy())
-        y_scores.extend(probs.cpu().numpy())
-
-fpr, tpr, _ = roc_curve(y_true, y_scores)
-roc_auc = auc(fpr, tpr)
-print(f"AUC: {roc_auc:.4f}")   # AUC: 0.8815
-
-plt.figure(figsize=(7, 5))
-plt.plot(fpr, tpr, color='tomato', lw=2, label=f'ResNet18 (AUC = {roc_auc:.3f})')
-plt.plot([0, 1], [0, 1], 'k--', label='Random baseline (AUC = 0.50)')
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('ROC Curve — Gravitational Lens Detection')
-plt.legend()
-plt.grid(alpha=0.3)
-plt.savefig('roc_curve.png', dpi=150)
-plt.show()
-```
-
----
-
 ## 🔮 Future Improvements
 
 | Improvement                          | Expected Benefit                                         | Status      |
 |--------------------------------------|----------------------------------------------------------|-------------|
-| Data augmentation (flips, rotations) | Reduces overfitting, improves generalisation            | 🔜 Planned  |
-| Weighted loss / Focal loss           | Better handling of 16:1 class imbalance                 | 🔜 Planned  |
-| Fine-tune more ResNet layers         | Higher AUC — backbone adapts to astronomy images        | 🔜 Planned  |
-| EfficientNet / ViT backbone          | State-of-the-art accuracy on image tasks                | 🔜 Planned  |
-| Threshold tuning for max Recall      | Catch more real lenses even at cost of false positives  | 🔜 Planned  |
-| Precision-Recall curve               | Fairer evaluation for highly imbalanced data            | 🔜 Planned  |
-| GradCAM visualisation                | Show which part of the image the model focuses on       | 🔜 Planned  |
-| Apply to real HSC-SSP sky data       | Discover actual new gravitational lens candidates       | 🎯 Goal     |
-| Cross-survey evaluation (DES, LSST) | Check if model generalises to other telescopes          | 🎯 Goal     |
+| Data augmentation (flips, rotations) | Reduces overfitting, improves generalisation             | 🔜 Planned  |
+| Weighted loss / Focal loss           | Better handling of 16:1 class imbalance                  | 🔜 Planned  |
+| Fine-tune more ResNet layers         | Higher AUC — backbone adapts to astronomy images         | 🔜 Planned  |
+| EfficientNet / ViT backbone          | State-of-the-art accuracy on image tasks                 | 🔜 Planned  |
+| Threshold tuning for max Recall      | Catch more real lenses even at cost of false positives   | 🔜 Planned  |
+| Precision-Recall curve               | Fairer evaluation for highly imbalanced data             | 🔜 Planned  |
+| GradCAM visualisation                | Show which part of the image the model focuses on        | 🔜 Planned  |
+| Apply to real HSC-SSP sky data       | Discover actual new gravitational lens candidates        | 🎯 Goal     |
+| Cross-survey evaluation (DES, LSST)  | Check if model generalises to other telescopes           | 🎯 Goal     |
 
 ---
 
@@ -448,8 +308,6 @@ plt.show()
 ---
 
 <div align="center">
-
-Made with ❤️ for GSoC 2025 — ML4SCI DeepLense
 **Author: Sayed Ammar**
 
 </div>
